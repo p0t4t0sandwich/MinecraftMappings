@@ -157,7 +157,7 @@ fun downloadSrgMappings(minecraftVersion: String): Mappings {
         cacheFile.parentFile.mkdirs()
         try {
             val url =
-                URL("http://files.minecraftforge.net/maven/de/oceanlabs/mcp/mcp/$minecraftVersion/mcp-$minecraftVersion-srg.zip")
+                URL("http://maven.minecraftforge.net/de/oceanlabs/mcp/mcp/$minecraftVersion/mcp-$minecraftVersion-srg.zip")
             ZipInputStream(url.openStream()).use { zipStream ->
                 var entry = zipStream.nextEntry
                 while (entry != null) {
