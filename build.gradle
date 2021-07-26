@@ -19,9 +19,6 @@ repositories {
     maven {
         url 'https://maven.modmuss50.me'
     }
-    maven {
-        url 'https://maven.fabricmc.net'
-    }
     maven { url 'https://jitpack.io' }
 }
 
@@ -35,7 +32,6 @@ dependencies {
     compile "com.google.code.gson:gson:2.8.0"
     compile "com.google.guava:guava:21.0"
     compile "net.md-5:SpecialSource:1.8.5"
-    compile "cuchaz:enigma:0.16.0+build.172"
 }
 
 compileKotlin {
