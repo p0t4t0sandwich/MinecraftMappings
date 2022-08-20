@@ -18,7 +18,7 @@ import java.util.*
 import java.util.zip.ZipInputStream
 import kotlin.system.exitProcess
 
-fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String, mcVersion: String): Mappings {
+fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String): Mappings {
     val cacheFile = File("cache/mcp_$mappingsVersion/mcp.json")
     val fieldNames = HashMap<String, String>()
     val methodNames = HashMap<String, String>()
@@ -71,23 +71,12 @@ fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String, mcVersio
             System.err.println("Unable to find mappings: $mappingsVersion")
             exitProcess(1)
         }
-
         // Parse the mappings data files
         try {
-            var openStream: InputStream
-            if (minecraftVersion != mcVersion) {
-                System.err.println("Version does not match, local file will be used")
-                if (File("mappings.zip") == null) {
-                    System.err.println("Unable to find file: mappings.zip")
-                    exitProcess(1)
-                }
-                openStream = File("mappings.zip").inputStream()
-            } else {
-                val url = URL("http://export.mcpbot.bspk.rs/mcp_$fullMappingsChannel/$mappingsId-$minecraftVersion/mcp_$fullMappingsChannel-$mappingsId-$minecraftVersion.zip")
-                println("Downloading MCP mappings from: $url")
-                openStream = url.openStream()
-            }
-            ZipInputStream(openStream).use {
+            val url =
+                URL("http://export.mcpbot.bspk.rs/mcp_$fullMappingsChannel/$mappingsId-$minecraftVersion/mcp_$fullMappingsChannel-$mappingsId-$minecraftVersion.zip")
+            println("Downloading MCP mappings from: $url")
+            ZipInputStream(url.openStream()).use {
                 var entry = it.nextEntry
                 do {
                     when (entry.name) {
