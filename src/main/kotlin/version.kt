@@ -15,18 +15,17 @@ enum class MinecraftVersion(
     val mcVersion: String,
     val mcpVersion: String? = null,
     val mcpConfig: Boolean = false,
-    val spigot: Boolean = false
+    val spigot: Boolean = false,
+    val mojang: Boolean = false
 ) {
-    V1_18_2("1.18.2", "snapshot_20220404", true, true),
+    V1_19_2("1.19.2", null, false, true, true),
+    V1_18_2("1.18.2", "official", true, false),
     V1_18_1("1.18.1", "snapshot_20210706", true, true),
     V1_17_1("1.17.1", "snapshot_20210706", true, true),
     V1_16_5("1.16.5", "snapshot_20210115", true, true),
     V1_16_4("1.16.4", "snapshot_20201102", true, true),
     V1_16_3("1.16.3", "snapshot_20201025", true, true),
-    V1_16_3_YARN("1.16.3", null, false, true),
     V1_16_2("1.16.2", "snapshot_20200812", true, true),
-    V1_16_2_YARN("1.16.2", null, false, true),
-    V1_16_1_YARN("1.16.1", null, false, true),
     V1_16_1("1.16.1", "snapshot_20200625", false, true),
     V1_15_2("1.15.2", "snapshot_20200515", true, true),
     V1_15_1("1.15.1", "snapshot_20191217", true, true),
@@ -66,8 +65,13 @@ enum class MinecraftVersion(
         }
         if (spigot) {
             val buildDataCommit = getBuildDataCommit(mcVersion)
-            val obf2spigotMappings = downloadSpigotMappings(buildDataCommit)
+            val obf2spigotMappings = downloadSpigotMappings(buildDataCommit, true)
             mappings.add(Pair(obf2spigotMappings, "spigot"))
+        }
+
+        if (mojang) {
+            val obf2mojangMappingSet = MojangMappings.getMappings(mcVersion)
+            mappings.add(Pair(obf2mojangMappingSet, "mojang"))
         }
 
         val completeMappings = mutableListOf<Pair<String, Mappings>>()
@@ -79,8 +83,14 @@ enum class MinecraftVersion(
             completeMappings.add(Pair("${a.second}2obf", a2obfMappings))
             for (b in mappings) {
                 if (a != b) {
-                    val a2bMappings = Mappings.chain(a2obfMappings, b.first)
-                    completeMappings.add(Pair("${a.second}2${b.second}", a2bMappings))
+					try {
+						// some code
+						val a2bMappings = Mappings.chain(a2obfMappings, b.first)
+						completeMappings.add(Pair("${a.second}2${b.second}", a2bMappings))
+					} catch (e: IllegalArgumentException) {
+						// handler
+						println("Failed: ${a.second}2${b.second}")
+					}
                 }
             }
         }
@@ -97,6 +107,7 @@ enum class MinecraftVersion(
             val srgLines = MappingsFormat.SEARGE_FORMAT.toLines(strippedMappings)
             srgLines.sort()
             val file = File(outputFolder, "$fileName.srg")
+            file.createNewFile()
             file.bufferedWriter().use {
                 for (line in srgLines) {
                     it.write(line)
