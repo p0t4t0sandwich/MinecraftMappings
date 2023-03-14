@@ -18,8 +18,10 @@ enum class MinecraftVersion(
     val spigot: Boolean = false,
     val mojang: Boolean = false
 ) {
-    V1_19_2("1.19.2", null, false, true, true),
-    V1_18_2("1.18.2", "official", true, false),
+    V1_19_4("1.19.4", null, false, true, false),
+    V1_19_3("1.19.3", null, false, true, false),
+    V1_19_2("1.19.2", null, false, true, false),
+    V1_18_2("1.18.2", null, false, true, false),
     V1_18_1("1.18.1", "snapshot_20210706", true, true),
     V1_17_1("1.17.1", "snapshot_20210706", true, true),
     V1_16_5("1.16.5", "snapshot_20210115", true, true),
