@@ -136,10 +136,10 @@ fun downloadSpigotMappings(buildDataCommit: String, modern: Boolean): Mappings {
             URL("$baseUrl/mappings/$classMappingsLocation/?at=$buildDataCommit&raw").downloadTo(classMappingsFile)
         }
         if (!memberMappingsFile.exists()) {
-			if (!modern) {
-				val memberMappingsLocation = info.get("memberMappings").asString
-				URL("$baseUrl/mappings/$memberMappingsLocation/?at=$buildDataCommit&raw").downloadTo(memberMappingsFile)
-			}
+            if (!modern) {
+                val memberMappingsLocation = info.get("memberMappings").asString
+                URL("$baseUrl/mappings/$memberMappingsLocation/?at=$buildDataCommit&raw").downloadTo(memberMappingsFile)
+            }
         }
         if (!packageMappingsFile.exists()) {
             val packages = HashMap<String, String>()
@@ -178,13 +178,13 @@ fun downloadSpigotMappings(buildDataCommit: String, modern: Boolean): Mappings {
         }
     }
     val classMappings = MappingsFormat.COMPACT_SEARGE_FORMAT.parseLines(stripBrokenLines(classMappingsFile.readLines()))
-    
-	if (modern) {
-		// 1.18+
-		return Mappings.chain(ImmutableList.of(classMappings))
-	}
-	
-	val memberMappings =
+
+    if (modern) {
+        // 1.18+
+        return Mappings.chain(ImmutableList.of(classMappings))
+    }
+
+    val memberMappings =
         MappingsFormat.COMPACT_SEARGE_FORMAT.parseLines(stripBrokenLines(memberMappingsFile.readLines()))
     val packages = JsonReader(packageMappingsFile.reader()).use {
         val builder = ImmutableMap.builder<String, String>()

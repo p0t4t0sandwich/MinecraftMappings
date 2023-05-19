@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.20-Beta'
+    id 'org.jetbrains.kotlin.jvm' version '1.8.21'
     id 'application'
 }
 
@@ -17,6 +17,9 @@ repositories {
     maven {
         url 'https://maven.modmuss50.me'
     }
+    maven {
+        url 'https://maven.fabricmc.net'
+    }
     maven { url 'https://jitpack.io' }
 }
 
@@ -29,8 +32,9 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'net.md-5:SpecialSource:1.11.0'
-    implementation 'org.cadixdev:lorenz:0.5.2'
-    implementation 'org.cadixdev:lorenz-io-proguard:0.5.2'
+    implementation 'org.cadixdev:lorenz:0.5.8'
+    implementation 'org.cadixdev:lorenz-io-proguard:0.5.8'
+    implementation 'cuchaz:enigma:0.13.1.+:all'
 }
 
 compileKotlin {

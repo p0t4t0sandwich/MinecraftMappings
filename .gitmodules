@@ -1,3 +1,6 @@
 [submodule "MCPConfig"]
 	path = MCPConfig
 	url = https://github.com/MinecraftForge/MCPConfig.git
+[submodule "yarn"]
+	path = yarn
+	url = https://github.com/FabricMC/yarn.git
