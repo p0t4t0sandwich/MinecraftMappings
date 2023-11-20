@@ -97,6 +97,7 @@ class CacheInfo(val buildDataCommits: MutableMap<String, String> = HashMap()) {
  */
 fun getBuildDataCommit(spigotVersion: String): String {
     val cacheFile = File("cache/info.json")
+    cacheFile.parentFile.mkdirs();
     val cacheInfo = if (cacheFile.exists()) CacheInfo.loadFrom(cacheFile) else CacheInfo()
     return cacheInfo.buildDataCommits.getOrElse(spigotVersion) {
         val url = URL("https://hub.spigotmc.org/versions/$spigotVersion.json")

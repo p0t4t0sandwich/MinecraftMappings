@@ -159,12 +159,14 @@ fun downloadSrgMappings(minecraftVersion: String): Mappings {
             }
             if (!cacheFile.exists()) {
                 System.err.println("Unable to download SRG mappings for $minecraftVersion: Unable to locate joined.srg in the zip file")
-                exitProcess(1)
+                //exitProcess(1)
+                throw Throwable()
             }
         } catch (e: IOException) {
             System.err.println("Unable to download SRG mappings for $minecraftVersion:")
-            e.printStackTrace()
-            exitProcess(1)
+//            e.printStackTrace()
+//            exitProcess(1)
+            throw Throwable()
         }
     }
     return MappingsFormat.SEARGE_FORMAT.parseFile(cacheFile)

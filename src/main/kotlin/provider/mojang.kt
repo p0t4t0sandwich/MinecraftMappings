@@ -85,7 +85,7 @@ object MojangMappings {
                     "Library/Application Support/minecraft"
                 )
             } else if (os.contains("linux")) {
-                File(File(System.getProperty("user.home")), ".minecraft/")
+                File(".minecraft/")
             } else {
                 throw RuntimeException("Failed to determine Minecraft directory for OS: $os")
             }
