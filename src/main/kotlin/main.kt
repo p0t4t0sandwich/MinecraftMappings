@@ -1,9 +1,7 @@
 import com.google.gson.JsonParser
-import com.google.gson.stream.JsonReader
 import provider.downloadTo
 import java.io.File
 import java.net.URL
-import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 
