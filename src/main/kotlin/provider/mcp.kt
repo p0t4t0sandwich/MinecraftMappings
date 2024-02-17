@@ -12,7 +12,6 @@ import net.techcable.srglib.format.MappingsFormat
 import net.techcable.srglib.mappings.Mappings
 import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import java.net.URL
 import java.util.*
 import java.util.zip.ZipInputStream
@@ -141,24 +140,31 @@ fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String): Mapping
 }
 
 fun downloadSrgMappings(minecraftVersion: String): Mappings {
-    val cacheFile = File("cache/mcp-$minecraftVersion-joined.srg")
-    if (!cacheFile.exists()) {
-        cacheFile.parentFile.mkdirs()
+    val cacheFileSrg = File("cache/mcp-$minecraftVersion-joined.srg")
+    val cacheFileTSrg = File("cache/mcp-$minecraftVersion-joined.tsrg")
+    if (!cacheFileSrg.exists() && !cacheFileTSrg.exists()) {
+        cacheFileSrg.parentFile.mkdirs()
         try {
             val url =
-                URL("http://maven.minecraftforge.net/de/oceanlabs/mcp/mcp/$minecraftVersion/mcp-$minecraftVersion-srg.zip")
+                URL("https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp/$minecraftVersion/mcp-$minecraftVersion-srg.zip")
             ZipInputStream(url.openStream()).use { zipStream ->
                 var entry = zipStream.nextEntry
                 while (entry != null) {
                     if (entry.name == "joined.srg") {
-                        check(cacheFile.createNewFile())
-                        cacheFile.outputStream().use { output -> zipStream.copyTo(output) }
+                        check(cacheFileSrg.createNewFile())
+                        cacheFileSrg.outputStream().use { output -> zipStream.copyTo(output) }
+                        return MappingsFormat.SEARGE_FORMAT.parseFile(cacheFileSrg)
+                    }
+                    if (entry.name == "joined.tsrg") {
+                        check(cacheFileTSrg.createNewFile())
+                        cacheFileTSrg.outputStream().use { output -> zipStream.copyTo(output) }
+                        return MappingsFormat.COMPACT_SEARGE_FORMAT.parseFile(cacheFileTSrg)
                     }
                     entry = zipStream.nextEntry
                 }
             }
-            if (!cacheFile.exists()) {
-                System.err.println("Unable to download SRG mappings for $minecraftVersion: Unable to locate joined.srg in the zip file")
+            if (!cacheFileSrg.exists() && !cacheFileTSrg.exists()) {
+                System.err.println("Unable to download SRG mappings for $minecraftVersion: Unable to locate joined.srg or joined.tsrg in the zip file")
                 //exitProcess(1)
                 throw Throwable()
             }
@@ -169,7 +175,9 @@ fun downloadSrgMappings(minecraftVersion: String): Mappings {
             throw Throwable()
         }
     }
-    return MappingsFormat.SEARGE_FORMAT.parseFile(cacheFile)
+    return if (cacheFileSrg.exists()) MappingsFormat.SEARGE_FORMAT.parseFile(cacheFileSrg)
+    else if (cacheFileTSrg.exists()) MappingsFormat.COMPACT_SEARGE_FORMAT.parseFile(cacheFileTSrg)
+    else throw Throwable("Cannot Find Mappings, even-though they should exist.")
 }
 
 // use MinecraftForge/MCPConfig to mappings > 1.13
