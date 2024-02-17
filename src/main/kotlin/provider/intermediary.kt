@@ -77,6 +77,7 @@ fun getLegacyIntermediaryMappings(minecraftVersion: String): Map<String, Mapping
                     }
                 }
             }
+            line.startsWith("# INTERMEDIARY-COUNTER") -> {}
 
             true -> TODO()
             false -> TODO()
