@@ -4,6 +4,9 @@ import java.io.File
 import java.net.URL
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 val GLOBAL_FOLDER = File("mappings")
 
@@ -11,17 +14,37 @@ fun main() {
     GLOBAL_FOLDER.mkdirs()
     download_minecraft_version_infos()
     println("Downloaded all Version informations")
+    val lock = ReentrantLock()
+    val condition = lock.newCondition()
+    val left = AtomicInteger(MinecraftVersion.values().size)
     val threadPoolExecutor = ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors())
     timed { ->
         for (version in MinecraftVersion.values()) {
-            if (File(GLOBAL_FOLDER, version.mcVersion).exists()) continue;
+            if (File(GLOBAL_FOLDER, version.mcVersion).exists()) {
+                if (left.decrementAndGet() == 0){
+                    lock.withLock {
+                        condition.signal()
+                    }
+                }
+                continue
+            }
             threadPoolExecutor.execute {
                 try{
                     timed { -> generateVersion(version) }
                 } catch (e:Throwable) {
                     File(GLOBAL_FOLDER,version.mcVersion).deleteRecursively()
+                    e.printStackTrace()
+                }finally{
+                    if (left.decrementAndGet() == 0){
+                        lock.withLock {
+                            condition.signal()
+                        }
+                    }
                 }
             }
+        }
+        lock.withLock { 
+            condition.await()
         }
         threadPoolExecutor.shutdown()
         threadPoolExecutor.awaitTermination(Long.MAX_VALUE,TimeUnit.DAYS)
@@ -30,7 +53,7 @@ fun main() {
 
 fun timed(runnable: Runnable){
     val time = System.currentTimeMillis()
-    runnable.run();
+    runnable.run()
     val elapsed = (System.currentTimeMillis() - time) / 1000.0
     println("Done. Took ${elapsed / 60}m (${elapsed}s)")
 }
@@ -46,13 +69,13 @@ fun download_minecraft_version_infos(){
         .asJsonObject
         .get("versions").asJsonArray
     ){
-        val obj = item.asJsonObject;
+        val obj = item.asJsonObject
         if (!obj.get("type").asString.equals("release")) continue
         val id = obj.get("id").asString
         val folder = File(".minecraft/versions/$id/")
         folder.mkdirs()
-        val file = File(folder, "$id.json");
-        if (file.exists()) continue;
+        val file = File(folder, "$id.json")
+        if (file.exists()) continue
         URL(obj.get("url").asString).downloadTo(file)
     }
 }

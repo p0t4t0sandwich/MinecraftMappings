@@ -1,4 +1,4 @@
-mappings/
+mappingsOld/
 bin
 cache
 .idea
@@ -9,5 +9,6 @@ build/
 .gradle/
 *.zip
 .minecraft
+mappingsOld
 mappings
 mappings.tar.gz
