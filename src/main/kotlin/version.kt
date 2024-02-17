@@ -12,11 +12,18 @@ import provider.*
 import java.io.File
 import SpigotMappingType.*
 
+//mcp versions: https://web.archive.org/web/20211108214657if_/http://export.mcpbot.bspk.rs/versions.json
+//And again, but only stable: https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_stable/maven-metadata.xml
+//And again, but only snapshot: https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_snapshot/maven-metadata.xml
+//even more mcp versions?: https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp/maven-metadata.xml
+//mcpConfig versions: https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_config/maven-metadata.xml
+//spigot versions: https://hub.spigotmc.org/versions
+//legacy intermediate versions: https://github.com/Legacy-Fabric/Legacy-Intermediaries/tree/master/mappings
 enum class MinecraftVersion(
     val mcVersion: String,
     val mcpVersion: String? = null,
     val mcpConfig: Boolean = false,
-    val spigot: SpigotMappingType = SpigotMappingType.NO_SPIGOT,
+    val spigot: SpigotMappingType = NO_SPIGOT,
     val yarn: Boolean = false,
     val mojang: Boolean = false,
     val legacyIntermediary: Boolean = false
@@ -30,7 +37,7 @@ enum class MinecraftVersion(
     V1_19_3("1.19.3", null, true, MODERN_SPIGOT, true, true, false),
     V1_19_2("1.19.2", null, true, MODERN_SPIGOT, true, true, false),
     V1_19_1("1.19.1", null, true, MODERN_SPIGOT, true, true, false),
-    V1_19_0("1.19", null, true, MODERN_SPIGOT, true, true, false),
+    V1_19_0("1.19", null, true, MODERN_SPIGOT, false, true, false), //yarn throws consistency errors
     V1_18_2("1.18.2", null, true, MODERN_SPIGOT, true, true, false),
     V1_18_1("1.18.1", null, true, MODERN_SPIGOT, true, true, false),
     V1_18_0("1.18", null, true, MODERN_SPIGOT, true, true, false),
@@ -41,32 +48,32 @@ enum class MinecraftVersion(
     V1_16_3("1.16.3", null, true, SPIGOT, true, true, false),
     V1_16_2("1.16.2", null, true, SPIGOT, true, true, false),
     V1_16_1("1.16.1", null, true, SPIGOT, true, true, false),
-    V1_16_0("1.16.0", null, true, SPIGOT, true, true, false),
-    V1_15_2("1.15.2", "snapshot_20200515", true, SPIGOT, true, true, false),
-    V1_15_1("1.15.1", "snapshot_20191217", true, SPIGOT, true, true, false),
-    V1_15_0("1.15", "snapshot_nodoc_20191212", true, SPIGOT, true, true, false),
-    V1_14_4("1.14.4", "snapshot_nodoc_20190729", true, SPIGOT, true, true, false),
-    V1_14_3("1.14.3", "snapshot_nodoc_20190729", true, SPIGOT, true, false, false),
-    V1_14_2("1.14.2", "stable_nodoc_53", true, SPIGOT, true, false, false),
-    V1_14_1("1.14.1", "stable_nodoc_51", true, SPIGOT, true, false, false),
-    V1_14_0("1.14", "stable_nodoc_49", true, SPIGOT, true, false, false),
-    V1_13_2("1.13.2", "stable_nodoc_47", true, SPIGOT, false, false, true),
-    V1_13_1("1.13.1", "stable_nodoc_45", true, SPIGOT, false, false, true),
-    V1_13_0("1.13", "stable_nodoc_43", true, SPIGOT, false, false, true),
-    V1_12_2("1.12.2", "stable_nodoc_39", false, SPIGOT, false, false, true),
-    V1_12_1("1.12.1", "stable_nodoc_39", false, SPIGOT, false, false, true),
-    V1_12_0("1.12", "snapshot_nodoc_20180814", false, SPIGOT, false, false, true),
-    V1_11_2("1.11.2", "snapshot_nodoc_20170612", false, SPIGOT, false, false, true),
-    V1_11_1("1.11.1", "stable_nodoc_32", false, SPIGOT, false, false, true),
-    V1_11_0("1.11", "stable_nodoc_31", false, SPIGOT, false, false, true),
-    V1_10_2("1.10.2", "snapshot_nodoc_20160703", false, SPIGOT, false, false, false),
-    V1_9_4("1.9.4", "snapshot_nodoc_20160604", false, SPIGOT, false, false, false),
-    V1_9("1.9", "snapshot_nodoc_20160516", false, SPIGOT, false, false, false),
-    V1_8_9("1.8.9", "snapshot_nodoc_20160301", false, SPIGOT, false, false, true),
-    V1_8_8("1.8.8", "snapshot_nodoc_20151216", false, SPIGOT, false, false, true),
-    V1_8("1.8", "snapshot_nodoc_20141130", false, SPIGOT, false, false, true),
-    V1_7_10("1.7.10", "snapshot_nodoc_20140925", true, SPIGOT, false, false);
-    ;
+    V1_16_0("1.16", null, true, NO_SPIGOT, true, true, false),
+    V1_15_2("1.15.2", null, true, SPIGOT, true, true, false),
+    V1_15_1("1.15.1", null, true, SPIGOT, true, true, false),
+    V1_15_0("1.15", null, true, SPIGOT, true, true, false),
+    //V1_14_4("1.14.4", "stable_nodoc_58", false, SPIGOT, true, true, false), //mcp mappings error out (mcpConfig, stable and snapshot)
+    V1_14_3("1.14.3", null, true, SPIGOT, true, false, false),
+    V1_14_2("1.14.2", null, true, SPIGOT, true, false, false),
+    V1_14_1("1.14.1", null, true, SPIGOT, true, false, false),
+    V1_14_0("1.14", null, true, SPIGOT, true, false, false),
+    V1_13_2("1.13.2", null, true, SPIGOT, false, false, true),
+    V1_13_1("1.13.1", null, true, SPIGOT, false, false, false),
+    V1_13_0("1.13", null, true, SPIGOT, false, false, false),
+    V1_12_2("1.12.2", null, false, SPIGOT, false, false, true),
+    V1_12_1("1.12.1", null, false, SPIGOT, false, false, false),
+    V1_12_0("1.12", null, false, SPIGOT, false, false, false),
+    V1_11_2("1.11.2", null, false, SPIGOT, false, false, true),
+    V1_11_1("1.11.1", null, false, SPIGOT, false, false, false),
+    V1_11_0("1.11", null, false, SPIGOT, false, false, false),
+    V1_10_2("1.10.2", null, false, SPIGOT, false, false, true),
+    V1_9_4("1.9.4", null, false, SPIGOT, false, false, true),
+    V1_9_2("1.9.2", null, false, SPIGOT, false, false, false),
+    V1_9("1.9", null, false, SPIGOT, false, false, false),
+    V1_8_9("1.8.9", null, false, NO_SPIGOT, false, false, true),
+    V1_8_8("1.8.8", null, false, SPIGOT, false, false, true),
+    V1_8("1.8", null, false, SPIGOT, false, false, true),
+    V1_7_10("1.7.10", null, true, NO_SPIGOT, false, false, false);
 
     fun generateMappings(): List<Pair<String, Mappings>> {
         // Mappings, fromObf
