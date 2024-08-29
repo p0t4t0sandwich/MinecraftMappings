@@ -24,10 +24,7 @@ object MojangMappings {
         cacheDir.mkdirs()
         download(version, cacheDir)
         val clientMappingFile = File(cacheDir, version + "_client.srg")
-        return MappingsFormat.SEARGE_FORMAT.parseLines(clientMappingFile.readLines().filter {
-            !it.contains("package-info")
-                    && !".*(\\$\\d+).*".toRegex().matches(it)
-        })
+        return MappingsFormat.SEARGE_FORMAT.parseLines(clientMappingFile.readLines())
     }
 
     fun download(version: String, dir: File?) {
