@@ -2,6 +2,7 @@ import com.google.gson.JsonParser
 import provider.downloadTo
 import java.io.File
 import java.net.URL
+import java.util.concurrent.ForkJoinPool
 import java.util.concurrent.ScheduledThreadPoolExecutor
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
@@ -9,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 
 val GLOBAL_FOLDER = File("mappings")
+val FJP = ForkJoinPool(Runtime.getRuntime().availableProcessors(), ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true)
 
 fun main() {
     GLOBAL_FOLDER.mkdirs()
@@ -48,6 +50,8 @@ fun main() {
         }
         threadPoolExecutor.shutdown()
         threadPoolExecutor.awaitTermination(Long.MAX_VALUE,TimeUnit.DAYS)
+        FJP.shutdown()
+        FJP.awaitTermination(Long.MAX_VALUE,TimeUnit.DAYS)
     }
 }
 

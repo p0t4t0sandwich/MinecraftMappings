@@ -175,75 +175,81 @@ enum class MinecraftVersion(
         generatedMappings.forEach { pair ->
             val fileName = pair.first
             val mappings = pair.second
-            mappings.writeTo(fileName)
+            FJP.execute {
+                mappings.writeTo(fileName)
+            }
         }
 
         // tiny
-        println("$mcVersion: writing tiny mappings to $mcVersion.tiny")
-        val tinyMappings = tiny.Mappings()
-        generatedMappings.filter { it.first.startsWith("obf2") }.forEach { pair ->
-            val name = pair.first.split("2")[1]
-
-            tinyMappings.addMappings(name, pair.second)
-        }
-        File(outputFolder, "$mcVersion.tiny").bufferedWriter().use {
-            for (line in tinyMappings.toStrings()) {
-                it.write(line)
-                it.write("\n")
+        FJP.execute {
+            println("$mcVersion: writing tiny mappings to $mcVersion.tiny")
+            val tinyMappings = tiny.Mappings()
+            generatedMappings.filter { it.first.startsWith("obf2") }.forEach { pair ->
+                val name = pair.first.split("2")[1]
+    
+                tinyMappings.addMappings(name, pair.second)
+            }
+            File(outputFolder, "$mcVersion.tiny").bufferedWriter().use {
+                for (line in tinyMappings.toStrings()) {
+                    it.write(line)
+                    it.write("\n")
+                }
             }
         }
 
         // json
-        val classMappings =
-            MultimapBuilder.hashKeys(1000).arrayListValues().build<JavaType, Pair<String, JavaType>>()
-        val fieldMappings =
-            MultimapBuilder.hashKeys(1000).arrayListValues().build<FieldData, Pair<String, FieldData>>()
-        val methodMappings =
-            MultimapBuilder.hashKeys(1000).arrayListValues().build<MethodData, Pair<String, MethodData>>()
-        generatedMappings.filter { it.first.startsWith("obf2") }.forEach { pair ->
-            val name = pair.first.split("2")[1]
-            val mappings = pair.second
-            mappings.forEachClass { obf, mapped -> classMappings.put(obf, Pair(name, mapped)) }
-            mappings.forEachField { obf, mapped -> fieldMappings.put(obf, Pair(name, mapped)) }
-            mappings.forEachMethod { obf, mapped -> methodMappings.put(obf, Pair(name, mapped)) }
-            println("$mcVersion: generating json for $name")
-        }
-
-        fun String.lp(): String = split(".").last()
-
-        val classArray = JsonArray()
-        val fieldArray = JsonArray()
-        val methodArray = JsonArray()
-        for (obf in classMappings.keySet()) {
-            val mappedObj = JsonObject()
-            mappedObj.addProperty("obf", obf.name.lp())
-            classMappings.get(obf).forEach {
-                mappedObj.addProperty(it.first, it.second.name.lp())
+        FJP.execute {
+            val classMappings =
+                MultimapBuilder.hashKeys(1000).arrayListValues().build<JavaType, Pair<String, JavaType>>()
+            val fieldMappings =
+                MultimapBuilder.hashKeys(1000).arrayListValues().build<FieldData, Pair<String, FieldData>>()
+            val methodMappings =
+                MultimapBuilder.hashKeys(1000).arrayListValues().build<MethodData, Pair<String, MethodData>>()
+            generatedMappings.filter { it.first.startsWith("obf2") }.forEach { pair ->
+                val name = pair.first.split("2")[1]
+                val mappings = pair.second
+                mappings.forEachClass { obf, mapped -> classMappings.put(obf, Pair(name, mapped)) }
+                mappings.forEachField { obf, mapped -> fieldMappings.put(obf, Pair(name, mapped)) }
+                mappings.forEachMethod { obf, mapped -> methodMappings.put(obf, Pair(name, mapped)) }
+                println("$mcVersion: generating json for $name")
             }
-            classArray.add(mappedObj)
-        }
-        for (obf in fieldMappings.keySet()) {
-            val mappedObj = JsonObject()
-            mappedObj.addProperty("obf", obf.declaringType.name.lp() + "." + obf.name.lp())
-            fieldMappings.get(obf).forEach {
-                mappedObj.addProperty(it.first, it.second.declaringType.name.lp() + "." + it.second.name)
+    
+            fun String.lp(): String = split(".").last()
+    
+            val classArray = JsonArray()
+            val fieldArray = JsonArray()
+            val methodArray = JsonArray()
+            for (obf in classMappings.keySet()) {
+                val mappedObj = JsonObject()
+                mappedObj.addProperty("obf", obf.name.lp())
+                classMappings.get(obf).forEach {
+                    mappedObj.addProperty(it.first, it.second.name.lp())
+                }
+                classArray.add(mappedObj)
             }
-            fieldArray.add(mappedObj)
-        }
-        for (obf in methodMappings.keySet()) {
-            val mappedObj = JsonObject()
-            mappedObj.addProperty("obf", obf.declaringType.name.lp() + "." + obf.name.lp())
-            methodMappings.get(obf).forEach {
-                mappedObj.addProperty(it.first, it.second.declaringType.name.lp() + "." + it.second.name)
+            for (obf in fieldMappings.keySet()) {
+                val mappedObj = JsonObject()
+                mappedObj.addProperty("obf", obf.declaringType.name.lp() + "." + obf.name.lp())
+                fieldMappings.get(obf).forEach {
+                    mappedObj.addProperty(it.first, it.second.declaringType.name.lp() + "." + it.second.name)
+                }
+                fieldArray.add(mappedObj)
             }
-            methodArray.add(mappedObj)
+            for (obf in methodMappings.keySet()) {
+                val mappedObj = JsonObject()
+                mappedObj.addProperty("obf", obf.declaringType.name.lp() + "." + obf.name.lp())
+                methodMappings.get(obf).forEach {
+                    mappedObj.addProperty(it.first, it.second.declaringType.name.lp() + "." + it.second.name)
+                }
+                methodArray.add(mappedObj)
+            }
+    
+            val bigJson = JsonObject()
+            bigJson.addProperty("minecraftVersion", mcVersion)
+            bigJson.add("classes", classArray)
+            bigJson.add("fields", fieldArray)
+            bigJson.add("methods", methodArray)
+            File(outputFolder, "$mcVersion.json").writeText(Gson().toJson(bigJson))
         }
-
-        val bigJson = JsonObject()
-        bigJson.addProperty("minecraftVersion", mcVersion)
-        bigJson.add("classes", classArray)
-        bigJson.add("fields", fieldArray)
-        bigJson.add("methods", methodArray)
-        File(outputFolder, "$mcVersion.json").writeText(Gson().toJson(bigJson))
     }
 }
