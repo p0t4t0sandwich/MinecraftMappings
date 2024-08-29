@@ -173,7 +173,7 @@ object TSrgUtil {
         if (!srgFile.exists() || !srgFile.isFile) throw RuntimeException("srg file not found: $srgFile")
 
         val lines = srgFile.readLines()
-        val classes = mutableListOf<Clazz>()
+        val classes = HashMap<String, Clazz>() //Todo: Let's hope that obf names are always unique
 
         lines.forEach { line ->
             when (true) {
@@ -182,8 +182,8 @@ object TSrgUtil {
                     val parts = l.split(" ")
                     val obf = parts[0]
                     val deobf = parts[1]
-                    if (!classes.map { it.obf }.contains(obf)) {
-                        classes.add(Clazz(obf, deobf))
+                    classes.computeIfAbsent(obf) {
+                        Clazz(it, deobf)
                     }
                 }
                 line.startsWith("FD: ") -> {
@@ -202,15 +202,7 @@ object TSrgUtil {
                     val deobfClass = p1.substring(0, p1s)
                     val deobf = p1.substring(p1s + 1, p1.length)
 
-                    val eligibleClasses = classes.filter { it.obf == obfClass && it.deobf == deobfClass }
-                    if (eligibleClasses.isNotEmpty()) {
-                        eligibleClasses.last().fields.add(Field(obf, deobf))
-                    } else {
-                        // this *shouldn't* happen but just in case the ordering of the mappings is weird we will
-                        // add the class to the map
-                        val newClass = Clazz(obfClass, deobfClass, mutableListOf(Field(obf, deobf)))
-                        classes.add(newClass)
-                    }
+                    classes.getOrDefault(obfClass, Clazz(obfClass, deobfClass)).fields.add(Field(obf, deobf))
                 }
                 line.startsWith("MD: ") -> {
                     val l = line.substring(4, line.length)
@@ -230,14 +222,7 @@ object TSrgUtil {
                     val deobfClass = p2.substring(0, p2s)
                     val deobf = p2.substring(p2s + 1, p2.length)
 
-                    val eligibleClasses = classes.filter { it.obf == obfClass && it.deobf == deobfClass }
-                    if (eligibleClasses.isNotEmpty()) {
-                        eligibleClasses.last().methods.add(Method(obf, obfSig, deobf))
-                    } else {
-                        val newClass =
-                            Clazz(obfClass, deobfClass, mutableListOf(), mutableListOf(Method(obf, obfSig, deobf)))
-                        classes.add(newClass)
-                    }
+                    classes.getOrDefault(obfClass, Clazz(obfClass, deobfClass)).methods.add(Method(obf, obfSig, deobf))
                 }
 
                 else -> {}
@@ -245,7 +230,7 @@ object TSrgUtil {
         }
 
         val output = StringBuilder()
-        classes.forEach { clazz ->
+        classes.values.forEach { clazz ->
             output.append("$clazz\n")
             clazz.fields.forEach {
                 output.append("\t$it\n")
