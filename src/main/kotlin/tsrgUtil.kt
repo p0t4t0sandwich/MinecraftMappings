@@ -1,4 +1,6 @@
 import java.io.File
+import java.util.*
+import kotlin.contracts.contract
 
 /**
  * Various utility functions for dealing with TSRG.
@@ -11,18 +13,22 @@ object TSrgUtil {
     // these classes are using data based on the TSRG format, not the SRG format
 
     data class Clazz(
-        var obf: String, var deobf: String,
+        var obf: String, var deobf: String, var other: List<String> = Collections.emptyList(),
         val fields: MutableList<Field> = mutableListOf(),
-        val methods: MutableList<Method> = mutableListOf()
+        val methods: MutableList<Method> = mutableListOf(),
     ) {
+        constructor(obf: String, deobf: String, fields: MutableList<Field>): this(obf, deobf, Collections.emptyList(), fields)
+        constructor(obf: String, deobf: String, fields: MutableList<Field>, methods: MutableList<Method>): this(obf, deobf, Collections.emptyList(), fields, methods)
+
         override fun toString(): String = "$obf $deobf"
     }
 
-    data class Field(var obf: String, var deobf: String) {
+    data class Field(var obf: String, var deobf: String, var other: List<String> = Collections.emptyList()) {
         override fun toString(): String = "$obf $deobf"
     }
 
-    data class Method(var obf: String, var obfSig: String, var deobf: String) {
+    data class Method(var obf: String, var obfSig: String, var deobf: String, var other: List<String> = Collections.emptyList()) {
+
         override fun toString(): String = "$obf $obfSig $deobf"
 
         fun getDeobfSig(classNames: Map<String, String>): String {
@@ -71,38 +77,49 @@ object TSrgUtil {
         // parse the lines
         lines.forEachIndexed { index, line ->
             if (line.startsWith("#") || line.trim().isEmpty()) { // comment
+            } else if (line.startsWith("\t\t") || line.startsWith("  ")) { //some random forge extra information.
+                //todo: add support for this?
             } else if (line.startsWith("\t") || line.startsWith(" ")) {
                 if (currentClass == null) throw RuntimeException("Parse error on line $index: no class\n$line")
                 val l = line.trim()
                 val parts = l.split(" ")
-                when (parts.size) {
-                    2 -> {
-                        // field
-                        val obf = parts[0]
-                        val deobf = parts[1]
-                        currentClass!!.fields.add(Field(obf, deobf))
+
+                if (parts.size < 2)
+                    throw RuntimeException("Parse error on line $index: class definition has too little parts\n$line")
+                
+                if (parts[1].contains("(") && parts[1].contains(")")) {
+                    if (parts.size < 3)
+                        throw RuntimeException("Parse error on line $index: class definition has too little parts\n$line")
+
+                    // method
+                    val obf = parts[0]
+                    val obfSig = parts[1]
+                    val deobf = parts[2]
+                    var other: List<String> = Collections.emptyList()
+                    if (parts.size > 3) {
+                        other = parts.subList(4, parts.size)
                     }
-                    3 -> {
-                        // method
-                        val obf = parts[0]
-                        val obfSig = parts[1]
-                        val deobf = parts[2]
-                        currentClass!!.methods.add(Method(obf, obfSig, deobf))
+                    currentClass!!.methods.add(Method(obf, obfSig, deobf, other))
+                }else {
+                    var other: List<String> = Collections.emptyList()
+                    if (parts.size > 2) {
+                        other = parts.subList(3, parts.size)
                     }
-                    else -> throw RuntimeException("Parse error on line $index: too many parts\n$line")
+                    // field
+                    val obf = parts[0]
+                    val deobf = parts[1]
+                    currentClass!!.fields.add(Field(obf, deobf, other))
                 }
             } else if (line.contains(" ")) {
                 currentClass?.let { classes.add(it) }
                 val parts = line.split(" ")
-                when (parts.size) {
-                    2 -> {
-                        // class
-                        val obf = parts[0]
-                        val deobf = parts[1]
-                        currentClass = Clazz(obf, deobf)
-                    }
-                    else -> throw RuntimeException("Parse error on line $index: class definition has too many parts\n$line")
+                if (parts.size < 2)
+                    throw RuntimeException("Parse error on line $index: class definition has too little parts\n$line")
+                var other: List<String> = Collections.emptyList()
+                if (parts.size > 2) {
+                    other = parts.subList(3, parts.size)
                 }
+                currentClass = Clazz(parts[0], parts[1], other)
             }
         }
         currentClass?.let {
