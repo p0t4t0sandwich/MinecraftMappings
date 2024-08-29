@@ -78,7 +78,7 @@ enum class MinecraftVersion(
     V1_8_9("1.8.9", "stable_nodoc_22", false, NO_SPIGOT, false, false, true),
     V1_8_8("1.8.8","stable_nodoc_20", false, SPIGOT, false, false, true),
     V1_8("1.8", "stable_nodoc_18", false, SPIGOT, false, false, true),
-    V1_7_10("1.7.10", "stable_nodoc_12", true, NO_SPIGOT, false, false, false);
+    V1_7_10("1.7.10", "stable_nodoc_12", false, NO_SPIGOT, false, false, false);
     fun generateMappings(): List<Pair<String, Mappings>> {
         // Mappings, fromObf
         val mappings = mutableListOf<Pair<Mappings, String>>()
