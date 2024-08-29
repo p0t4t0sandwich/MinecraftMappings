@@ -33,7 +33,7 @@ fun main() {
                     timed { -> generateVersion(version) }
                 } catch (e:Throwable) {
                     File(GLOBAL_FOLDER,version.mcVersion).deleteRecursively()
-                    e.printStackTrace()
+                    RuntimeException("Error generating mappings for $version.", e).printStackTrace()
                 }finally{
                     if (left.decrementAndGet() == 0){
                         lock.withLock {
