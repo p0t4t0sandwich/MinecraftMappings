@@ -54,44 +54,47 @@ enum class MinecraftVersion(
     V1_16_1("1.16.1", null, true, SPIGOT, true, true, false),
     V1_16_0("1.16", null, true, NO_SPIGOT, true, true, false),
     V1_15_2("1.15.2", null, true, SPIGOT, true, true, false),
-    V1_15_1("1.15.1", null, true, SPIGOT, true, true, false),
-    V1_15_0("1.15", null, true, SPIGOT, true, true, false),
-    //V1_14_4("1.14.4", "stable_nodoc_58", false, SPIGOT, true, true, false), //mcp mappings error out (mcpConfig, stable and snapshot)
-    V1_14_3("1.14.3", null, true, SPIGOT, true, false, false),
-    V1_14_2("1.14.2", null, true, SPIGOT, true, false, false),
-    V1_14_1("1.14.1", null, true, SPIGOT, true, false, false),
-    V1_14_0("1.14", null, true, SPIGOT, true, false, false),
-    V1_13_2("1.13.2", null, true, SPIGOT, false, false, true),
-    V1_13_1("1.13.1", null, true, SPIGOT, false, false, false),
-    V1_13_0("1.13", null, true, SPIGOT, false, false, false),
-    V1_12_2("1.12.2", null, false, SPIGOT, false, false, true),
+    V1_15_1("1.15.1", "snapshot_nodoc_20211108", true, SPIGOT, true, true, false),
+    V1_15_0("1.15", "stable_nodoc_60", true, SPIGOT, true, true, false),
+    //V1_14_4("1.14.4", "stable_nodoc_58", true, SPIGOT, true, true, false), //mcp mappings error out (mcpConfig, stable and snapshot)
+    V1_14_3("1.14.3", "stable_nodoc_56", true, SPIGOT, true, false, false),
+    V1_14_2("1.14.2", "stable_nodoc_53", true, SPIGOT, true, false, false),
+    V1_14_1("1.14.1", "stable_nodoc_51", true, SPIGOT, true, false, false),
+    V1_14_0("1.14", "stable_nodoc_49", true, SPIGOT, true, false, false),
+    V1_13_2("1.13.2", "stable_nodoc_47", true, SPIGOT, false, false, true),
+    V1_13_1("1.13.1", "stable_nodoc_45", true, SPIGOT, false, false, false),
+    V1_13_0("1.13", "stable_nodoc_43", true, SPIGOT, false, false, false),
+    V1_12_2("1.12.2", "stable_nodoc_39", true, SPIGOT, false, false, true),
     V1_12_1("1.12.1", null, false, SPIGOT, false, false, false),
-    V1_12_0("1.12", null, false, SPIGOT, false, false, false),
+    V1_12_0("1.12", "stable_nodoc_39", false, SPIGOT, false, false, false),
     V1_11_2("1.11.2", null, false, SPIGOT, false, false, true),
     V1_11_1("1.11.1", null, false, SPIGOT, false, false, false),
-    V1_11_0("1.11", null, false, SPIGOT, false, false, false),
-    V1_10_2("1.10.2", null, false, SPIGOT, false, false, true),
-    V1_9_4("1.9.4", null, false, SPIGOT, false, false, true),
+    V1_11_0("1.11", "stable_nodoc_32", false, SPIGOT, false, false, false),
+    V1_10_2("1.10.2", "stable_nodoc_29", false, SPIGOT, false, false, true),
+    V1_10_0("1.10", null, false, SPIGOT, false, false, false),
+    V1_9_4("1.9.4", "stable_nodoc_26", false, SPIGOT, false, false, true),
     V1_9_2("1.9.2", null, false, SPIGOT, false, false, false),
-    V1_9("1.9", null, false, SPIGOT, false, false, false),
-    V1_8_9("1.8.9", null, false, NO_SPIGOT, false, false, true),
-    V1_8_8("1.8.8", null, false, SPIGOT, false, false, true),
-    V1_8("1.8", null, false, SPIGOT, false, false, true),
-    V1_7_10("1.7.10", null, true, NO_SPIGOT, false, false, false);
-
+    V1_9("1.9", "stable_nodoc_24", false, SPIGOT, false, false, false),
+    V1_8_9("1.8.9", "stable_nodoc_22", false, NO_SPIGOT, false, false, true),
+    V1_8_8("1.8.8","stable_nodoc_20", false, SPIGOT, false, false, true),
+    V1_8("1.8", "stable_nodoc_18", false, SPIGOT, false, false, true),
+    V1_7_10("1.7.10", "stable_nodoc_12", true, NO_SPIGOT, false, false, false);
     fun generateMappings(): List<Pair<String, Mappings>> {
         // Mappings, fromObf
         val mappings = mutableListOf<Pair<Mappings, String>>()
-
+        
+        //srg mappings
+        val obf2srgMappings = if (mcpConfig) {
+            getMCPConfigMappings(mcVersion)
+        } else {
+            downloadSrgMappings(mcVersion)
+        }
+        mappings.add(Pair(obf2srgMappings, "srg"))
+        
+        //mcp mappings build ontop of srg mappings. Only add mcp, if available
         if (mcpVersion != null) {
-            val obf2srgMappings = if (mcpConfig) {
-                getMCPConfigMappings(mcVersion)
-            } else {
-                downloadSrgMappings(mcVersion)
-            }
             val srg2mcpMappings = downloadMcpMappings(obf2srgMappings, mcpVersion)
             val obf2mcp = Mappings.chain(ImmutableList.of(obf2srgMappings, srg2mcpMappings))
-            mappings.add(Pair(obf2srgMappings, "srg"))
             mappings.add(Pair(obf2mcp, "mcp"))
         }
         if (spigot == SPIGOT || spigot == MODERN_SPIGOT) {
