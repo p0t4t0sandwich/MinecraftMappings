@@ -2,15 +2,14 @@ import com.google.gson.JsonParser
 import provider.downloadTo
 import java.io.File
 import java.net.URL
-import java.util.concurrent.ForkJoinPool
-import java.util.concurrent.ScheduledThreadPoolExecutor
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.ReentrantLock
+import javax.net.ssl.SSLException
 import kotlin.concurrent.withLock
 
 val GLOBAL_FOLDER = File("mappings")
-val FJP = ForkJoinPool(Runtime.getRuntime().availableProcessors(), ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true)
+val FJP: ExecutorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors())
 val MAPPING_CLASS_COUNT_APPROXIMATION = 4000
 val MAPPING_METHOD_COUNT_APPROXIMATION = MAPPING_CLASS_COUNT_APPROXIMATION * 2
 val MAPPING_FIELD_COUNT_APPROXIMATION = MAPPING_CLASS_COUNT_APPROXIMATION * 2
@@ -22,7 +21,7 @@ fun main() {
     val lock = ReentrantLock()
     val condition = lock.newCondition()
     val left = AtomicInteger(MinecraftVersion.values().size)
-    val threadPoolExecutor = ScheduledThreadPoolExecutor(Runtime.getRuntime().availableProcessors())
+    val threadPoolExecutor = ThreadPoolExecutor(Runtime.getRuntime().availableProcessors()/4, Runtime.getRuntime().availableProcessors(), 10, TimeUnit.SECONDS, ArrayBlockingQueue(MinecraftVersion.values().size))
     timed { ->
         for (version in MinecraftVersion.values()) {
             if (File(GLOBAL_FOLDER, version.mcVersion).exists()) {
@@ -66,7 +65,16 @@ fun timed(runnable: Runnable){
 }
 fun generateVersion(version: MinecraftVersion) {
     println("Generating mappings for version: ${version.mcVersion}")
-    version.write(GLOBAL_FOLDER)
+    while (true) {
+        try{
+            version.write(GLOBAL_FOLDER)
+            break
+        }catch (e: SSLException){
+            if (e.message != "Connection reset"){
+                throw e
+            }
+        }
+    }
     println("Generated mappings for version: ${version.mcVersion}")
 }
 
