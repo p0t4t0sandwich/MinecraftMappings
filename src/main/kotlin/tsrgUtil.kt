@@ -173,7 +173,7 @@ object TSrgUtil {
         if (!srgFile.exists() || !srgFile.isFile) throw RuntimeException("srg file not found: $srgFile")
 
         val lines = srgFile.readLines()
-        val classes = HashMap<String, Clazz>() //Todo: Let's hope that obf names are always unique
+        val classes = HashMap<String, Clazz>(MAPPING_CLASS_COUNT_APPROXIMATION) //Todo: Let's hope that obf names are always unique
 
         lines.forEach { line ->
             when (true) {

@@ -16,14 +16,11 @@ import net.techcable.srglib.mappings.Mappings
  */
 
 class Mappings(
-    var namespaces: MutableList<String>,
-    val classes: HashMap<ClassMappingData, MutableMap<String, String>>,
-    val fields: HashMap<FieldMappingData, MutableMap<String, String>>,
-    val methods: HashMap<MethodMappingData, MutableMap<String, String>>
+    var namespaces: MutableList<String> = mutableListOf(),
+    val classes: HashMap<ClassMappingData, MutableMap<String, String>> = HashMap(MAPPING_CLASS_COUNT_APPROXIMATION),
+    val fields: HashMap<FieldMappingData, MutableMap<String, String>> = HashMap(MAPPING_FIELD_COUNT_APPROXIMATION),
+    val methods: HashMap<MethodMappingData, MutableMap<String, String>> = HashMap(MAPPING_METHOD_COUNT_APPROXIMATION)
 ) {
-
-    constructor() : this(mutableListOf(), HashMap(), HashMap(), HashMap())
-
     fun addMappings(namespace: String, mappings: Mappings) {
         namespaces.add(namespace)
         println("tiny: starting conversion for $namespace")

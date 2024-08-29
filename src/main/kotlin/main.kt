@@ -11,6 +11,9 @@ import kotlin.concurrent.withLock
 
 val GLOBAL_FOLDER = File("mappings")
 val FJP = ForkJoinPool(Runtime.getRuntime().availableProcessors(), ForkJoinPool.defaultForkJoinWorkerThreadFactory, null, true)
+val MAPPING_CLASS_COUNT_APPROXIMATION = 4000
+val MAPPING_METHOD_COUNT_APPROXIMATION = MAPPING_CLASS_COUNT_APPROXIMATION * 2
+val MAPPING_FIELD_COUNT_APPROXIMATION = MAPPING_CLASS_COUNT_APPROXIMATION * 2
 
 fun main() {
     GLOBAL_FOLDER.mkdirs()
