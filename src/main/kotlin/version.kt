@@ -28,6 +28,7 @@ enum class MinecraftVersion(
     val mojang: Boolean = false,
     val legacyIntermediary: Boolean = false
 ) {
+    V1_21_1("1.21.1", null, true, MODERN_SPIGOT, true, true, false),
     V1_21("1.21", null, true, MODERN_SPIGOT, true, true, false),
     V1_20_6("1.20.6", null, true, MODERN_SPIGOT, true, true, false),
     V1_20_5("1.20.5", null, true, MODERN_SPIGOT, true, true, false),
