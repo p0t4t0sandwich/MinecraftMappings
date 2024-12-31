@@ -32,7 +32,7 @@ enum class MinecraftVersion(
     V1_21_3("1.21.3", null, true, MODERN_SPIGOT, true, true, false),
     V1_21_2("1.21.2", null, true, MODERN_SPIGOT, true, true, false),
     V1_21_1("1.21.1", null, true, MODERN_SPIGOT, true, true, false),
-    V1_21("1.21", null, true, MODERN_SPIGOT, true, true, false),
+    V1_21_0("1.21", null, true, MODERN_SPIGOT, true, true, false),
     V1_20_6("1.20.6", null, true, MODERN_SPIGOT, true, true, false),
     V1_20_5("1.20.5", null, true, MODERN_SPIGOT, true, true, false),
     V1_20_4("1.20.4", null, true, MODERN_SPIGOT, true, true, false),
@@ -74,28 +74,58 @@ enum class MinecraftVersion(
     V1_11_1("1.11.1", null, false, SPIGOT, false, false, false),
     V1_11_0("1.11", "stable_nodoc_32", false, SPIGOT, false, false, false),
     V1_10_2("1.10.2", "stable_nodoc_29", false, SPIGOT, false, false, true),
+    // V1_10_1 -- no mappings
     V1_10_0("1.10", null, false, SPIGOT, false, false, false),
     V1_9_4("1.9.4", "stable_nodoc_26", false, SPIGOT, false, false, true),
+    // V1_9_3 -- no mappings
     V1_9_2("1.9.2", null, false, SPIGOT, false, false, false),
+    // V1_9_1 -- no mappings
     V1_9("1.9", "stable_nodoc_24", false, SPIGOT, false, false, false),
     V1_8_9("1.8.9", "stable_nodoc_22", false, NO_SPIGOT, false, false, true),
     V1_8_8("1.8.8","stable_nodoc_20", false, SPIGOT, false, false, true),
+    V1_8_7("1.8.7",null, false, SPIGOT, false, false, true),
+    V1_8_6("1.8.6",null, false, SPIGOT, false, false, true),
+    V1_8_5("1.8.5",null, false, SPIGOT, false, false, true),
+    V1_8_4("1.8.4",null, false, SPIGOT, false, false, true),
+    V1_8_3("1.8.3",null, false, SPIGOT, false, false, true),
+    V1_8_2("1.8.2",null, false, NO_SPIGOT, false, false, true),
+    V1_8_1("1.8.1",null, false, NO_SPIGOT, false, false, true),
     V1_8("1.8", "stable_nodoc_18", false, SPIGOT, false, false, true),
-    V1_7_10("1.7.10", "stable_nodoc_12", false, NO_SPIGOT, false, false, false);
+    V1_7_10("1.7.10", "stable_nodoc_12", false, NO_SPIGOT, false, false, false),
+    V1_7_9("1.7.9", null, false, NO_SPIGOT, false, false, true),
+    V1_7_8("1.7.8", null, false, NO_SPIGOT, false, false, true),
+    V1_7_6("1.7.6", null, false, NO_SPIGOT, false, false, true),
+    V1_7_5("1.7.5", null, false, NO_SPIGOT, false, false, true),
+    V1_7_4("1.7.4", null, false, NO_SPIGOT, false, false, true),
+    V1_7_3("1.7.3", null, false, NO_SPIGOT, false, false, true),
+    V1_7_2("1.7.2", null, false, NO_SPIGOT, false, false, true),
+    V1_7_1("1.7.1", null, false, NO_SPIGOT, false, false, true),
+    V1_7("1.7", null, false, NO_SPIGOT, false, false, true);
+
     fun generateMappings(): List<Pair<String, Mappings>> {
         // Mappings, fromObf
         val mappings = mutableListOf<Pair<Mappings, String>>()
-        
+
+        // List of versions that don't have srg or mcp mappings
+        val noSrgMcp = listOf(
+            "1.8.7", "1.8.6", "1.8.5", "1.8.4", "1.8.3", "1.8.2", "1.8.1",
+            "1.7.9", "1.7.8", "1.7.6", "1.7.5", "1.7.4", "1.7.3", "1.7.2", "1.7.1", "1.7"
+        )
+
         //srg mappings
         val obf2srgMappings = if (mcpConfig) {
             getMCPConfigMappings(mcVersion)
-        } else {
+        } else if (mcVersion !in noSrgMcp) {
             downloadSrgMappings(mcVersion)
+        } else {
+            null
         }
-        mappings.add(Pair(obf2srgMappings, "srg"))
+        if (obf2srgMappings != null) {
+            mappings.add(Pair(obf2srgMappings, "srg"))
+        }
 
         //mcp mappings build ontop of srg mappings. Only add mcp, if available
-        if (mcpVersion != null) {
+        if (mcpVersion != null && obf2srgMappings != null) {
             val srg2mcpMappings = downloadMcpMappings(obf2srgMappings, mcpVersion)
             val obf2mcp = Mappings.chain(ImmutableList.of(obf2srgMappings, srg2mcpMappings))
             mappings.add(Pair(obf2mcp, "mcp"))
