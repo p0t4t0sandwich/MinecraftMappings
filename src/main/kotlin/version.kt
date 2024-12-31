@@ -44,7 +44,7 @@ enum class MinecraftVersion(
     V1_19_3("1.19.3", null, true, MODERN_SPIGOT, true, true, false),
     V1_19_2("1.19.2", null, true, MODERN_SPIGOT, true, true, false),
     V1_19_1("1.19.1", null, true, MODERN_SPIGOT, true, true, false),
-    V1_19_0("1.19", null, true, MODERN_SPIGOT, false, true, false), //yarn throws consistency errors
+    V1_19_0("1.19", null, true, MODERN_SPIGOT, true, true, false), //yarn throws consistency errors
     V1_18_2("1.18.2", null, true, MODERN_SPIGOT, true, true, false),
     V1_18_1("1.18.1", null, true, MODERN_SPIGOT, true, true, false),
     V1_18_0("1.18", null, true, MODERN_SPIGOT, true, true, false),
@@ -59,7 +59,7 @@ enum class MinecraftVersion(
     V1_15_2("1.15.2", null, true, SPIGOT, true, true, false),
     V1_15_1("1.15.1", "snapshot_nodoc_20211108", true, SPIGOT, true, true, false),
     V1_15_0("1.15", "stable_nodoc_60", true, SPIGOT, true, true, false),
-    //V1_14_4("1.14.4", "stable_nodoc_58", true, SPIGOT, true, true, false), //mcp mappings error out (mcpConfig, stable and snapshot)
+    V1_14_4("1.14.4", "stable_nodoc_58", true, SPIGOT, true, true, false), // Added field_19384 to yarn broken list
     V1_14_3("1.14.3", "stable_nodoc_56", true, SPIGOT, true, false, false),
     V1_14_2("1.14.2", "stable_nodoc_53", true, SPIGOT, true, false, false),
     V1_14_1("1.14.1", "stable_nodoc_51", true, SPIGOT, true, false, false),
@@ -93,7 +93,7 @@ enum class MinecraftVersion(
             downloadSrgMappings(mcVersion)
         }
         mappings.add(Pair(obf2srgMappings, "srg"))
-        
+
         //mcp mappings build ontop of srg mappings. Only add mcp, if available
         if (mcpVersion != null) {
             val srg2mcpMappings = downloadMcpMappings(obf2srgMappings, mcpVersion)
