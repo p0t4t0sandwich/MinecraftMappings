@@ -73,7 +73,7 @@ object MojangMappings {
      */
     val minecraftFolder: File
         get() {
-            val os = System.getProperty("os.name").toLowerCase()
+            val os = System.getProperty("os.name").lowercase()
             return if (os.contains("win")) {
                 File(File(System.getenv("APPDATA")), ".minecraft")
             } else if (os.contains("mac")) {
