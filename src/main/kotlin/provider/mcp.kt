@@ -1,5 +1,6 @@
 package provider
 
+import MCP_MAVEN_REPO
 import TSrgUtil
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -26,7 +27,7 @@ fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String): Mapping
         check(cacheFile.createNewFile())
         // Validate and compute the mapping version information
         val mappingsVersions: Map<String, Map<String, List<Int>>> =
-            JsonReader(URL("https://web.archive.org/web/20211108214657if_/http://export.mcpbot.bspk.rs/versions.json").openStream().reader()).use { reader ->
+            JsonReader(URL("$MCP_MAVEN_REPO/de/oceanlabs/mcp/versions.json").openStream().reader()).use { reader ->
                 val result = HashMap<String, MutableMap<String, MutableList<Int>>>()
                 // We have to parse this by hand or else things don't work
                 reader.beginObject()
@@ -73,7 +74,7 @@ fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String): Mapping
         // Parse the mappings data files
         try {
             val url =
-                URL("https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_$fullMappingsChannel/$mappingsId-$minecraftVersion/mcp_$fullMappingsChannel-$mappingsId-$minecraftVersion.zip")
+                URL("$MCP_MAVEN_REPO/de/oceanlabs/mcp/mcp_$fullMappingsChannel/$mappingsId-$minecraftVersion/mcp_$fullMappingsChannel-$mappingsId-$minecraftVersion.zip")
             println("Downloading MCP mappings from: $url")
             ZipInputStream(url.openStream()).use {
                 var entry = it.nextEntry
@@ -139,14 +140,14 @@ fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String): Mapping
     ).transform(srgMappings.inverted())
 }
 
-fun downloadSrgMappings(minecraftVersion: String): Mappings {
+fun downloadSrgMappings(minecraftVersion: String): Mappings? {
     val cacheFileSrg = File("cache/mcp-$minecraftVersion-joined.srg")
     val cacheFileTSrg = File("cache/mcp-$minecraftVersion-joined.tsrg")
     if (!cacheFileSrg.exists() && !cacheFileTSrg.exists()) {
         cacheFileSrg.parentFile.mkdirs()
         try {
             val url =
-                URL("https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp/$minecraftVersion/mcp-$minecraftVersion-srg.zip")
+                URL("$MCP_MAVEN_REPO/de/oceanlabs/mcp/mcp/$minecraftVersion/mcp-$minecraftVersion-srg.zip")
             ZipInputStream(url.openStream()).use { zipStream ->
                 var entry = zipStream.nextEntry
                 while (entry != null) {
@@ -169,10 +170,11 @@ fun downloadSrgMappings(minecraftVersion: String): Mappings {
                 throw Throwable()
             }
         } catch (e: IOException) {
-            System.err.println("Unable to download SRG mappings for $minecraftVersion:")
+            System.err.println("Unable to download SRG mappings for $minecraftVersion")
 //            e.printStackTrace()
 //            exitProcess(1)
-            throw Throwable(e)
+//            throw Throwable(e)
+            return null
         }
     }
     return if (cacheFileSrg.exists()) MappingsFormat.SEARGE_FORMAT.parseFile(cacheFileSrg)
