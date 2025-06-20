@@ -1,5 +1,6 @@
 package provider
 
+import FABRIC_MAVEN_REPO
 import cuchaz.enigma.ProgressListener
 import cuchaz.enigma.translation.mapping.serde.MappingFormat
 import net.techcable.srglib.format.MappingsFormat
@@ -25,7 +26,7 @@ fun getYarnVersion(minecraftVersion: String): String {
 }
 
 fun downloadYarn(yarnVersion: String, file: File) {
-    URL("https://maven.fabricmc.net/net/fabricmc/yarn/$yarnVersion/yarn-$yarnVersion-tiny.gz").downloadTo(file)
+    URL("$FABRIC_MAVEN_REPO/net/fabricmc/yarn/$yarnVersion/yarn-$yarnVersion-tiny.gz").downloadTo(file)
 }
 
 fun getYarnMappings(minecraftVersion: String): Map<String, Mappings> {
@@ -62,11 +63,11 @@ fun getYarnMappings(minecraftVersion: String): Map<String, Mappings> {
                             val namespace = namespaces[index - 4]
                             if (namespace != "official") {
 
-//                                val broken = arrayOf("field_24240", "field_24245", "field_19384")
+                                // val broken = arrayOf("field_24240", "field_24245", "field_19384")
                                 // 1.14.4 yarn fix
                                 val broken = arrayOf("field_19384")
 
-                                if (!(mapped in broken)) {
+                                if (mapped !in broken) {
                                     field.add(namespace, mapped)
                                 } else {
                                 	println("Test: $namespace $mapped")
