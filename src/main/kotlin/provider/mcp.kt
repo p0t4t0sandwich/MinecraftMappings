@@ -26,7 +26,7 @@ fun downloadMcpMappings(srgMappings: Mappings, mappingsVersion: String): Mapping
         check(cacheFile.createNewFile())
         // Validate and compute the mapping version information
         val mappingsVersions: Map<String, Map<String, List<Int>>> =
-            JsonReader(URL("https://web.archive.org/web/20211108214657if_/http://export.mcpbot.bspk.rs/versions.json").openStream().reader()).use { reader ->
+            JsonReader(URL("https://reposilite.c0d3m4513r.com/Forge/de/oceanlabs/mcp/versions.json").openStream().reader()).use { reader ->
                 val result = HashMap<String, MutableMap<String, MutableList<Int>>>()
                 // We have to parse this by hand or else things don't work
                 reader.beginObject()

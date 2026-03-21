@@ -12,7 +12,7 @@ import provider.*
 import java.io.File
 import SpigotMappingType.*
 
-//mcp versions: https://web.archive.org/web/20211108214657if_/http://export.mcpbot.bspk.rs/versions.json
+//mcp versions: https://reposilite.c0d3m4513r.com/Forge/de/oceanlabs/mcp/versions.json
 //And again, but only stable: https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_stable/maven-metadata.xml
 //And again, but only snapshot: https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_snapshot/maven-metadata.xml
 //even more mcp versions?: https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp/maven-metadata.xml
