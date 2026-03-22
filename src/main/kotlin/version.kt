@@ -13,15 +13,14 @@ import java.io.File
 import SpigotMappingType.*
 
 // MCP versions:
-// - https://web.archive.org/web/20211108214657if_/http://export.mcpbot.bspk.rs/versions.json
-// - https://maven.neuralnexus.dev/mirror/de/oceanlabs/mcp/versions.json
 // - https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/versions.json
+// - https://maven.neuralnexus.dev/mirror/de/oceanlabs/mcp/versions.json
 // MCP stable:
-// - https://maven.neuralnexus.dev/mirror/de/oceanlabs/mcp/mcp_stable/maven-metadata.xml
 // - https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_stable/maven-metadata.xml
+// - https://maven.neuralnexus.dev/mirror/de/oceanlabs/mcp/mcp_stable/maven-metadata.xml
 // MCP snapshot:
-// - https://maven.neuralnexus.dev/mirror/de/oceanlabs/mcp/mcp_snapshot/maven-metadata.xml
 // - https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp_snapshot/maven-metadata.xml
+// - https://maven.neuralnexus.dev/mirror/de/oceanlabs/mcp/mcp_snapshot/maven-metadata.xml
 // More MCP versions? https://nexus.c0d3m4513r.com/repository/Forge/de/oceanlabs/mcp/mcp/maven-metadata.xml
 
 // MCP Config versions:
