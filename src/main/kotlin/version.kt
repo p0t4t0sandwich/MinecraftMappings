@@ -69,13 +69,13 @@ enum class MinecraftVersion(
     V1_19_3("1.19.3", null, true, MODERN_SPIGOT, true, true, false),
     V1_19_2("1.19.2", null, true, MODERN_SPIGOT, true, true, false),
     V1_19_1("1.19.1", null, true, MODERN_SPIGOT, true, true, false),
-    V1_19_0("1.19", null, true, MODERN_SPIGOT, true, true, false), //yarn throws consistency errors
+    V1_19_0("1.19", null, true, MODERN_SPIGOT, true, true, false),
     V1_18_2("1.18.2", null, true, MODERN_SPIGOT, true, true, false),
     V1_18_1("1.18.1", null, true, MODERN_SPIGOT, true, true, false),
     V1_18_0("1.18", null, true, MODERN_SPIGOT, true, true, false),
     V1_17_1("1.17.1", null, true, SPIGOT, true, true, false),
     V1_17_0("1.17", null, true, SPIGOT, true, true, false),
-    V1_16_5("1.16.5", null, true, SPIGOT, true, true, false),
+    V1_16_5("1.16.5", null, true, SPIGOT, true, true, false), // Latest MCPConfig version is inconsistent with runtime mappings (which use one MCP version older)
     V1_16_4("1.16.4", null, true, SPIGOT, true, true, false),
     V1_16_3("1.16.3", null, true, SPIGOT, true, true, false),
     V1_16_2("1.16.2", null, true, SPIGOT, true, true, false),
@@ -84,7 +84,7 @@ enum class MinecraftVersion(
     V1_15_2("1.15.2", null, true, SPIGOT, true, true, false),
     V1_15_1("1.15.1", "snapshot_nodoc_20211108", true, SPIGOT, true, true, false),
     V1_15_0("1.15", "stable_nodoc_60", true, SPIGOT, true, true, false),
-    V1_14_4("1.14.4", "stable_nodoc_58", true, SPIGOT, true, true, false), // Added field_19384 to yarn broken list
+    V1_14_4("1.14.4", "stable_nodoc_58", true, SPIGOT, true, true, false), // Requires small Yarn mappings fix outlined in yarn.kt
     V1_14_3("1.14.3", "stable_nodoc_56", true, SPIGOT, true, false, false),
     V1_14_2("1.14.2", "stable_nodoc_53", true, SPIGOT, true, false, false),
     V1_14_1("1.14.1", "stable_nodoc_51", true, SPIGOT, true, false, false),
@@ -92,29 +92,29 @@ enum class MinecraftVersion(
     V1_13_2("1.13.2", "stable_nodoc_47", true, SPIGOT, false, false, true),
     V1_13_1("1.13.1", "stable_nodoc_45", true, SPIGOT, false, false, false),
     V1_13_0("1.13", "stable_nodoc_43", true, SPIGOT, false, false, false),
-    V1_12_2("1.12.2", "stable_nodoc_39", true, SPIGOT, false, false, true),
-    V1_12_1("1.12.1", null, false, SPIGOT, false, false, false),
+    V1_12_2("1.12.2", "stable_nodoc_39", true, SPIGOT, false, false, true), // Borrows MCP from 1.12
+    V1_12_1("1.12.1", "stable_nodoc_39", false, SPIGOT, false, false, false), // Borrows MCP from 1.12
     V1_12_0("1.12", "stable_nodoc_39", false, SPIGOT, false, false, false),
-    V1_11_2("1.11.2", null, false, SPIGOT, false, false, true),
-    V1_11_1("1.11.1", null, false, SPIGOT, false, false, false),
+    V1_11_2("1.11.2", "stable_nodoc_32", false, SPIGOT, false, false, true), // Borrows MCP from 1.11
+    V1_11_1("1.11.1", "stable_nodoc_32", false, SPIGOT, false, false, false), // Borrows MCP from 1.11
     V1_11_0("1.11", "stable_nodoc_32", false, SPIGOT, false, false, false),
     V1_10_2("1.10.2", "stable_nodoc_29", false, SPIGOT, false, false, true),
     // V1_10_1 -- no mappings
-    V1_10_0("1.10", null, false, SPIGOT, false, false, false),
+    V1_10_0("1.10", "stable_nodoc_29", false, SPIGOT, false, false, false), // Borrows MCP from 1.10.2
     V1_9_4("1.9.4", "stable_nodoc_26", false, SPIGOT, false, false, true),
     // V1_9_3 -- no mappings
-    V1_9_2("1.9.2", null, false, SPIGOT, false, false, false),
+    V1_9_2("1.9.2", "stable_nodoc_26", false, SPIGOT, false, false, false), // Borrows MCP from 1.9.4
     // V1_9_1 -- no mappings
     V1_9_0("1.9", "stable_nodoc_24", false, SPIGOT, false, false, false),
     V1_8_9("1.8.9", "stable_nodoc_22", false, NO_SPIGOT, false, false, true),
     V1_8_8("1.8.8","stable_nodoc_20", false, SPIGOT, false, false, true),
-    V1_8_7("1.8.7",null, false, SPIGOT, false, false, true),
-    V1_8_6("1.8.6",null, false, SPIGOT, false, false, true),
-    V1_8_5("1.8.5",null, false, SPIGOT, false, false, true),
-    V1_8_4("1.8.4",null, false, SPIGOT, false, false, true),
-    V1_8_3("1.8.3",null, false, SPIGOT, false, false, true),
-    V1_8_2("1.8.2",null, false, NO_SPIGOT, false, false, true),
-    V1_8_1("1.8.1",null, false, NO_SPIGOT, false, false, true),
+    V1_8_7("1.8.7", null, false, SPIGOT, false, false, true),
+    V1_8_6("1.8.6", null, false, SPIGOT, false, false, true),
+    V1_8_5("1.8.5", null, false, SPIGOT, false, false, true),
+    V1_8_4("1.8.4", null, false, SPIGOT, false, false, true),
+    V1_8_3("1.8.3", null, false, SPIGOT, false, false, true),
+    V1_8_2("1.8.2", null, false, NO_SPIGOT, false, false, true),
+    V1_8_1("1.8.1", null, false, NO_SPIGOT, false, false, true),
     V1_8_0("1.8", "stable_nodoc_18", false, SPIGOT, false, false, true),
     V1_7_10("1.7.10", "stable_nodoc_12", false, NO_SPIGOT, false, false, true),
     V1_7_9("1.7.9", null, false, NO_SPIGOT, false, false, true),
